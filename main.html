@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precision Utility Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { darkMode: "class", theme: { extend: { colors: { primary: "#7e000f", "primary-container": "#a11e22", background: "#f9f9fc", surface: "#f9f9fc", "on-surface": "#1a1c1e", "on-surface-variant": "#59413f", "surface-container-low": "#f3f3f6", "surface-container-high": "#e8e8ea" } } } }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        body { font-family: 'Public Sans', sans-serif; min-height: 100dvh; }
+    </style>
+</head>
+<body class="bg-background text-on-surface pb-24">
+    <header class="flex justify-between items-center px-8 h-16 bg-white/85 backdrop-blur-xl border-b border-slate-100 sticky top-0 z-30">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-slate-400">location_on</span>
+            <span class="text-sm font-bold text-slate-700" id="current-region">권역 식별 중...</span>
+        </div>
+        
+        <div class="flex items-center gap-1">
+            <button class="material-symbols-outlined text-primary p-2 rounded-lg hover:bg-slate-100 transition-colors">notifications</button>
+            <button class="material-symbols-outlined text-primary p-2 rounded-lg hover:bg-slate-100 transition-colors">settings</button>
+        </div>
+    </header>
+
+    <main class="pt-20 px-6 max-w-lg mx-auto">
+        <div class="mt-4 mb-8">
+            <h1 class="text-4xl font-extrabold tracking-tight text-primary leading-tight">PRECISION<br/>UTILITY</h1>
+            <p class="text-on-surface-variant text-sm mt-2 opacity-70">매니저: 전정태 (서울 권역)</p>
+        </div>
+
+        <section class="grid grid-cols-2 gap-4 mb-8">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-primary/5 flex flex-col gap-3">
+                <span class="material-symbols-outlined text-primary text-3xl">groups</span>
+                <span class="font-bold text-sm">팀현황</span>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-primary/5 flex flex-col gap-3">
+                <span class="material-symbols-outlined text-primary text-3xl">payments</span>
+                <span class="font-bold text-sm">출장비</span>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-primary/5 flex flex-col gap-3">
+                <span class="material-symbols-outlined text-primary text-3xl">local_shipping</span>
+                <span class="font-bold text-sm">공동배송</span>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-primary/5 flex flex-col gap-3 relative overflow-hidden">
+                <span class="material-symbols-outlined text-primary text-3xl">assignment_late</span>
+                <span class="font-bold text-sm">미결리스트</span>
+                <div class="absolute -top-1 -right-1 w-10 h-10 bg-primary/10 rounded-full blur-xl"></div>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <a href="team_login.html" class="w-full bg-gradient-to-br from-primary to-primary-container text-white p-5 rounded-xl flex items-center justify-between shadow-lg active:scale-95 transition-all block">
+                <div class="flex items-center gap-4">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">engineering</span>
+                    <span class="font-bold text-lg">시공팀 프로필 생성</span>
+                </div>
+                <span class="material-symbols-outlined">chevron_right</span>
+            </a>
+        </section>
+
+        <section class="mb-10">
+            <div class="bg-white p-5 rounded-xl flex items-start gap-4 border border-primary/5 shadow-sm">
+                <div class="p-2 bg-red-50 rounded-lg"><span class="material-symbols-outlined text-primary">campaign</span></div>
+                <div class="flex-1">
+                    <div class="flex justify-between items-center mb-1"><span class="text-xs font-bold text-primary uppercase tracking-wider">공지사항</span></div>
+                    <p class="text-sm leading-relaxed text-on-surface">서울 권역 배송 스케줄이 업데이트되었습니다.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차량정보 - TEAM SETUP</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Public Sans', sans-serif; }</style>
+</head>
+<body class="bg-[#f9f9fc] text-[#1a1c1e] pb-24">
+    <header class="bg-white/80 backdrop-blur-md fixed top-0 w-full z-50 flex items-center px-6 h-16 border-b border-gray-100">
+        <button onclick="window.history.back()" class="material-symbols-outlined text-[#7e000f] mr-4 p-2 scale-95 cursor-pointer">arrow_back</button>
+        <h1 class="font-bold text-[#7e000f] text-sm uppercase tracking-widest">Team Vehicle</h1>
+    </header>
+
+    <main class="pt-24 px-6 max-w-2xl mx-auto">
+        <h2 class="text-3xl font-black mb-8">시공팀 차량 정보</h2>
+
+        <div class="space-y-6">
+            <div class="mb-6">
+                <label class="block text-xs font-bold text-[#7e000f] mb-2">Team ID (시공팀명)</label>
+                <input id="v-team" class="w-full bg-gray-100 border border-gray-200 rounded-lg px-4 py-3 outline-none font-bold text-gray-500" type="text" readonly>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div><label class="text-xs font-bold text-gray-500 mb-2 block">차명</label>
+                    <input id="v-name" placeholder="예: 포터2, 봉고3" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 outline-none" type="text"></div>
+                <div><label class="text-xs font-bold text-gray-500 mb-2 block">차량번호</label>
+                    <input id="v-plate" placeholder="예: 12가 3456" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 outline-none" type="text"></div>
+                <div><label class="text-xs font-bold text-gray-500 mb-2 block">연료</label>
+                    <select id="v-fuel" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 outline-none appearance-none">
+                        <option value="">선택하세요</option><option value="휘발유">휘발유</option><option value="경유">경유</option><option value="LPG">LPG</option><option value="전기">전기</option>
+                    </select>
+                </div>
+                <div><label class="text-xs font-bold text-gray-500 mb-2 block">연식</label>
+                    <input id="v-year" oninput="formatNumberOnly(this)" maxlength="4" placeholder="예: 2023" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 outline-none" type="text"></div>
+                <div><label class="text-xs font-bold text-gray-500 mb-2 block">차량 형태</label>
+                    <select id="v-type" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 outline-none appearance-none">
+                        <option value="">선택하세요</option><option value="밴형">밴형</option><option value="탑형">탑형</option><option value="오픈배드형">오픈배드형</option>
+                    </select>
+                </div>
+                <div><label class="text-xs font-bold text-gray-500 mb-2 block">번호판 구분</label>
+                    <select id="v-category" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 outline-none appearance-none">
+                        <option value="">선택하세요</option><option value="일반 번호판">일반 번호판</option><option value="배번호판">배번호판</option><option value="영업용번호판">영업용번호판</option>
+                    </select>
+                </div>
+                <div>
+                     <label class="text-xs font-bold text-gray-500 mb-2 block">최대적재량</label>
+                     <input id="v-capacity" onfocus="stripUnit(this, 'kg')" onblur="appendUnit(this, 'kg')" placeholder="예: 1000" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 outline-none" type="text">
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-500 mb-2 block">탄소배출량</label>
+                    <input id="v-emission" onfocus="stripUnit(this, 'g/km')" onblur="appendUnit(this, 'g/km')" placeholder="예: 65" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 outline-none" type="text">
+                </div>
+                <div><label class="text-xs font-bold text-gray-500 mb-2 block">운전면허종류</label>
+                    <select id="d-type" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 outline-none appearance-none">
+                        <option value="">선택하세요</option><option value="1종 대형">1종 대형</option><option value="1종 보통">1종 보통</option><option value="1종 특수">1종 특수</option><option value="2종 보통">2종 보통</option><option value="2종 특수">2종 특수</option><option value="기타">기타</option>
+                    </select>
+                </div>
+                <div><label class="text-xs font-bold text-gray-500 mb-2 block">운전면허번호 (하이픈 자동)</label>
+                    <input id="d-license" oninput="formatLicense(this)" maxlength="15" placeholder="12-34-567890-12" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 outline-none" type="text"></div>
+                <div><label class="text-xs font-bold text-gray-500 mb-2 block">화물운송자격증 번호 (하이픈 자동)</label>
+                    <input id="c-no" oninput="formatCargo(this)" maxlength="11" placeholder="1-23-456789" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 outline-none" type="text"></div>
+                <div><label class="text-xs font-bold text-gray-500 mb-2 block">화물운송자격증 취득일 (YYYYMMDD)</label>
+                    <input id="c-date" oninput="formatNumberOnly(this)" maxlength="8" placeholder="예: 20230101" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 outline-none" type="text"></div>
+            </div>
+
+            <button onclick="submitVehicle()" id="submit-btn" class="w-full bg-[#7e000f] text-white py-5 rounded-lg font-black mt-8 shadow-lg active:scale-95 transition-all">SAVE VEHICLE PROFILE</button>
+        </div>
+    </main>
+
+    <script>
+        const GOOGLE_APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxABPrmCFVHRv6TpZR3QOeASYp5qnsdqKiqztX4SJcVTalj-Q87Vabrt9fe9Ji07PyE/exec";
+
+        function formatNumberOnly(el) { el.value = el.value.replace(/[^0-9]/g, ''); }
+        function formatLicense(el) {
+            let val = el.value.replace(/[^0-9]/g, '');
+            if (val.length > 2 && val.length <= 4) val = val.replace(/(\d{2})(\d+)/, '$1-$2');
+            else if (val.length > 4 && val.length <= 10) val = val.replace(/(\d{2})(\d{2})(\d+)/, '$1-$2-$3');
+            else if (val.length > 10) val = val.replace(/(\d{2})(\d{2})(\d{6})(\d+)/, '$1-$2-$3-$4');
+            el.value = val;
+        }
+        function formatCargo(el) {
+            let val = el.value.replace(/[^0-9]/g, '');
+            if (val.length > 1 && val.length <= 3) val = val.replace(/(\d{1})(\d+)/, '$1-$2');
+            else if (val.length > 3) val = val.replace(/(\d{1})(\d{2})(\d+)/, '$1-$2-$3');
+            el.value = val;
+        }
+
+        // 💡 단위 관련 유틸리티 함수
+        function appendUnit(el, unit) {
+            let val = el.value.trim();
+            if (!val) return;
+            // 숫자만 추출해서 단위 붙이기
+            let num = val.replace(/[^0-9.]/g, ''); 
+            if (num) el.value = num + unit;
+        }
+
+        function stripUnit(el, unit) {
+            // 편집을 위해 단위 제거하고 숫자만 남기기
+            el.value = el.value.replace(unit, '').trim();
+        }
+
+        window.onload = async function() {
+            const teamId = new URLSearchParams(window.location.search).get('teamId');
+            if (!teamId) return;
+            document.getElementById('v-team').value = teamId;
+            document.getElementById('submit-btn').innerText = "데이터 불러오는 중...";
+
+            try {
+                const res = await fetch(`${GOOGLE_APP_SCRIPT_URL}?teamName=${encodeURIComponent(teamId)}`);
+                const result = await res.json();
+                if (result.result === 'success') {
+                    const d = result.data;
+                    const map = { 
+                        '차명':'v-name', '차량번호':'v-plate', '연식':'v-year', '연료':'v-fuel', 
+                        '차량형태':'v-type', '번호판구분':'v-category', '최대적재량':'v-capacity', '탄소배출량':'v-emission', 
+                        '운전면허번호':'d-license', '운전면허종류':'d-type', '화물운송종사자격증번호':'c-no', '화물운송종사자격증취득일':'c-date' 
+                    };
+                    for (let key in map) if(d[key]) document.getElementById(map[key]).value = d[key];
+                }
+            } catch(e) {}
+            document.getElementById('submit-btn').innerText = "SAVE VEHICLE PROFILE";
+        }
+
+        async function submitVehicle() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const payload = {
+                teamName: document.getElementById('v-team').value, 
+                "센터": urlParams.get('center'),
+                "권역시공팀": urlParams.get('region'),
+                "시공팀명": document.getElementById('v-team').value,
+                "차명": document.getElementById('v-name').value, 
+                "차량번호": document.getElementById('v-plate').value, 
+                "연식": document.getElementById('v-year').value, 
+                "연료": document.getElementById('v-fuel').value, 
+                "차량형태": document.getElementById('v-type').value, 
+                "번호판구분": document.getElementById('v-category').value, 
+                "최대적재량": document.getElementById('v-capacity').value, 
+                "탄소배출량": document.getElementById('v-emission').value, 
+                "운전면허번호": document.getElementById('d-license').value, 
+                "운전면허종류": document.getElementById('d-type').value, 
+                "화물운송종사자격증번호": document.getElementById('c-no').value, 
+                "화물운송종사자격증취득일": document.getElementById('c-date').value
+            };
+            
+            const btn = document.getElementById('submit-btn'); 
+            btn.innerText = "Saving..."; btn.disabled = true;
+            
+            try {
+                await fetch(GOOGLE_APP_SCRIPT_URL, { 
+                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+                    body: JSON.stringify({ payload: payload }) 
+                });
+                alert("저장 완료!"); 
+            } catch(e) { alert("저장 중 오류가 발생했습니다."); }
+            btn.innerText = "SAVE VEHICLE PROFILE"; btn.disabled = false;
+        }
+    </script>
+</body>
+</html>

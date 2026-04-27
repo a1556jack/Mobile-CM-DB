@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>개인정보 - TEAM SETUP</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Public Sans', sans-serif; }</style>
+</head>
+<body class="bg-[#f9f9fc] text-[#1a1c1e] pb-32">
+    <header class="bg-white/80 backdrop-blur-md fixed top-0 w-full z-50 flex items-center px-6 h-16 border-b border-gray-100">
+        <button onclick="window.history.back()" class="material-symbols-outlined text-[#7e000f] mr-4 p-2 scale-95 cursor-pointer">arrow_back</button>
+        <h1 class="font-bold text-[#7e000f] text-sm uppercase tracking-widest">TEAM SETUP</h1>
+    </header>
+
+    <main class="pt-24 px-6 max-w-2xl mx-auto">
+        <h2 class="text-4xl font-black mb-8">시공팀 개인 정보</h2>
+
+        <div class="space-y-6">
+            <div class="mb-6">
+                <label class="block text-xs font-bold text-[#7e000f] mb-2">Team ID (시공팀명 - 고유 키)</label>
+                <input id="input-team-id" class="w-full bg-gray-100 border border-gray-200 rounded-lg px-4 py-3 outline-none font-bold text-gray-500" type="text" readonly>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-2">이름</label>
+                    <input id="input-name" placeholder="예: 전정태" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#7e000f] outline-none transition-all" type="text">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-2">생년월일 (YYMMDD)</label>
+                    <input id="input-dob" oninput="formatNumberOnly(this)" maxlength="6" placeholder="예: 900101" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#7e000f] outline-none transition-all" type="text">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-2">연락처 (하이픈 자동)</label>
+                    <input id="input-contact" oninput="formatPhone(this)" maxlength="13" placeholder="010-0000-0000" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#7e000f] outline-none transition-all" type="tel">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-2">이메일</label>
+                    <input id="input-email" placeholder="예: admin@fursys.com" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#7e000f] outline-none transition-all" type="email">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-600 mb-2">주소</label>
+                <input id="input-address" placeholder="도로명 주소를 입력해주세요" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#7e000f] outline-none transition-all" type="text">
+            </div>
+            
+            <div>
+                <label class="block text-xs font-bold text-gray-600 mb-2">경력 기재란</label>
+                <textarea id="input-bio" rows="4" placeholder="주요 시공 경력 및 특이사항을 자유롭게 적어주세요." class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#7e000f] outline-none transition-all"></textarea>
+            </div>
+
+            <button onclick="submitData()" id="submit-btn" class="w-full bg-[#7e000f] text-white py-5 rounded-lg font-black mt-8 shadow-lg active:scale-95 transition-all">SAVE INFORMATION</button>
+        </div>
+    </main>
+
+    <script>
+        const GOOGLE_APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxABPrmCFVHRv6TpZR3QOeASYp5qnsdqKiqztX4SJcVTalj-Q87Vabrt9fe9Ji07PyE/exec";
+
+        function formatNumberOnly(el) { el.value = el.value.replace(/[^0-9]/g, ''); }
+        function formatPhone(el) {
+            let val = el.value.replace(/[^0-9]/g, '');
+            if (val.length > 3 && val.length <= 7) val = val.replace(/(\d{3})(\d+)/, '$1-$2');
+            else if (val.length > 7) val = val.replace(/(\d{3})(\d{4})(\d+)/, '$1-$2-$3');
+            el.value = val;
+        }
+
+        window.onload = async function() {
+            const teamId = new URLSearchParams(window.location.search).get('teamId');
+            if (!teamId) return;
+            document.getElementById('input-team-id').value = teamId;
+            document.getElementById('submit-btn').innerText = "데이터 불러오는 중...";
+            
+            try {
+                const res = await fetch(`${GOOGLE_APP_SCRIPT_URL}?teamName=${encodeURIComponent(teamId)}`);
+                const result = await res.json();
+                if (result.result === 'success') {
+                    const d = result.data;
+                    if(d['이름']) document.getElementById('input-name').value = d['이름'];
+                    if(d['생년월일']) document.getElementById('input-dob').value = d['생년월일'];
+                    if(d['연락처']) document.getElementById('input-contact').value = d['연락처'];
+                    if(d['이메일']) document.getElementById('input-email').value = d['이메일'];
+                    if(d['주소']) document.getElementById('input-address').value = d['주소'];
+                    if(d['경력 기재란']) document.getElementById('input-bio').value = d['경력 기재란'];
+                }
+            } catch(e) {}
+            document.getElementById('submit-btn').innerText = "SAVE INFORMATION";
+        }
+
+        async function submitData() {
+            const btn = document.getElementById('submit-btn');
+            btn.innerText = "Saving..."; btn.disabled = true;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const payload = {
+                teamName: document.getElementById('input-team-id').value, // 시스템이 행을 찾는 기준 (Key)
+                "센터": urlParams.get('center'), 
+                "권역시공팀": urlParams.get('region'),
+                "시공팀명": document.getElementById('input-team-id').value, // 구글 시트에 기록할 실제 이름
+                "이름": document.getElementById('input-name').value,
+                "생년월일": document.getElementById('input-dob').value,
+                "연락처": document.getElementById('input-contact').value,
+                "이메일": document.getElementById('input-email').value,
+                "주소": document.getElementById('input-address').value,
+                "경력 기재란": document.getElementById('input-bio').value
+            };
+
+            try {
+                await fetch(GOOGLE_APP_SCRIPT_URL, {
+                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ payload: payload })
+                });
+                alert("저장 완료!");
+            } catch(e) { alert("저장 중 오류가 발생했습니다."); }
+            btn.innerText = "SAVE INFORMATION"; btn.disabled = false;
+        }
+    </script>
+</body>
+</html>

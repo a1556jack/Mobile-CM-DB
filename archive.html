@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>서류 아카이브 - TEAM SETUP</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Public Sans', sans-serif; }</style>
+</head>
+<body class="bg-[#f9f9fc] text-[#1a1c1e] pb-24">
+    <header class="bg-white/80 backdrop-blur-md fixed top-0 w-full z-50 flex items-center px-6 h-16 border-b border-gray-100">
+        <button onclick="window.history.back()" class="material-symbols-outlined text-[#7e000f] mr-4 p-2 scale-95 cursor-pointer">arrow_back</button>
+        <h1 class="font-bold text-[#7e000f] text-sm uppercase tracking-widest">Team Archive</h1>
+    </header>
+
+    <main class="pt-24 px-6 max-w-2xl mx-auto">
+        <h2 class="text-3xl font-black mb-8">서류 개별 등록</h2>
+
+        <div class="mb-8 bg-white p-5 rounded-xl border border-gray-200 grid grid-cols-2 gap-4">
+            <div>
+                <label class="text-[11px] font-bold text-[#7e000f] block mb-2">소속 분류</label>
+                <input id="info-id" class="w-full bg-gray-50 border-gray-200 rounded-lg px-4 py-3 font-bold text-gray-600 outline-none text-xs" type="text" readonly>
+            </div>
+            <div>
+                <label class="text-[11px] font-bold text-[#7e000f] block mb-2">Team ID</label>
+                <input id="team-id" class="w-full bg-gray-50 border-gray-200 rounded-lg px-4 py-3 font-bold text-gray-600 outline-none text-xs" type="text" readonly>
+            </div>
+        </div>
+
+        <div id="doc-list" class="space-y-4"></div>
+    </main>
+
+    <script>
+        const GOOGLE_APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxABPrmCFVHRv6TpZR3QOeASYp5qnsdqKiqztX4SJcVTalj-Q87Vabrt9fe9Ji07PyE/exec";
+        
+        const docs = [ 
+            { id: "u1", name: "사업자등록증", col: "사업자등록증" }, 
+            { id: "u2", name: "자동차등록증", col: "자동차등록증" }, 
+            { id: "u3", name: "화물운송자격증", col: "화물운송자격증" }, 
+            { id: "u4", name: "운전면허증", col: "운전면허증" }, 
+            { id: "u5", name: "화물사업허가증", col: "화물사업허가증" }, 
+            { id: "u6", name: "시공위탁계약서", col: "시공위탁계약서" }, 
+            { id: "u7", name: "택배위탁계약서", col: "택배위탁계약서" } 
+        ];
+        const listContainer = document.getElementById('doc-list');
+
+        docs.forEach(doc => {
+            const div = document.createElement('div');
+            div.className = "bg-white p-5 rounded-xl border border-gray-100 flex items-center gap-4 shadow-sm";
+            div.innerHTML = `<div class="flex-grow"><h3 class="text-sm font-bold">${doc.name}</h3><p id="status-${doc.id}" class="text-[10px] text-gray-400 mt-1 uppercase font-bold">대기 중</p></div><input type="file" id="file-${doc.id}" accept="image/*,application/pdf" class="hidden" onchange="processAndUpload('${doc.id}', '${doc.col}')"><button id="btn-${doc.id}" onclick="document.getElementById('file-${doc.id}').click()" class="bg-[#7e000f] text-white px-4 py-2 rounded-lg text-xs font-bold hover:opacity-90 flex items-center gap-2 transition-all active:scale-95"><span class="material-symbols-outlined text-sm">upload</span><span>업로드</span></button>`;
+            listContainer.appendChild(div);
+        });
+
+        window.onload = async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const teamId = urlParams.get('teamId');
+            const center = urlParams.get('center');
+            const region = urlParams.get('region');
+            
+            if (!teamId) return;
+            document.getElementById('team-id').value = teamId;
+            if (center && region) document.getElementById('info-id').value = `${center} / ${region}`;
+            
+            try {
+                const res = await fetch(`${GOOGLE_APP_SCRIPT_URL}?teamName=${encodeURIComponent(teamId)}`);
+                const result = await res.json();
+                if (result.result === 'success') {
+                    const d = result.data;
+                    docs.forEach(doc => {
+                        if (d[doc.col] && d[doc.col].startsWith('http')) {
+                            document.getElementById(`status-${doc.id}`).innerText = "제출 완료됨";
+                            document.getElementById(`status-${doc.id}`).className = "text-[10px] text-green-600 font-bold uppercase";
+                            const btn = document.getElementById(`btn-${doc.id}`);
+                            btn.innerHTML = '<span class="material-symbols-outlined text-sm">visibility</span><span>보기/재업로드</span>';
+                            btn.className = "bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all active:scale-95";
+                            btn.onclick = () => { if(confirm("기존 파일을 보시겠습니까? (취소를 누르면 새 파일을 업로드합니다)")) window.open(d[doc.col], '_blank'); else document.getElementById(`file-${doc.id}`).click(); };
+                        }
+                    });
+                }
+            } catch(e) {}
+        }
+
+        function compressImage(file, callback) {
+            if (!file.type.startsWith('image/')) {
+                const reader = new FileReader(); reader.onload = e => callback(e.target.result.split(',')[1], file.type); reader.readAsDataURL(file); return;
+            }
+            const reader = new FileReader(); reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image(); img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+                    let width = img.width, height = img.height; const MAX = 1200;
+                    if (width > height && width > MAX) { height *= MAX / width; width = MAX; } else if (height > MAX) { width *= MAX / height; height = MAX; }
+                    canvas.width = width; canvas.height = height; ctx.drawImage(img, 0, 0, width, height);
+                    callback(canvas.toDataURL('image/jpeg', 0.7).split(',')[1], 'image/jpeg');
+                };
+            };
+        }
+
+        async function processAndUpload(docId, columnName) {
+            const teamName = document.getElementById('team-id').value;
+            const urlParams = new URLSearchParams(window.location.search);
+            const centerName = urlParams.get('center');
+            const regionName = urlParams.get('region');
+            
+            const file = document.getElementById(`file-${docId}`).files[0]; if(!file) return;
+            const status = document.getElementById(`status-${docId}`), btn = document.getElementById(`btn-${docId}`);
+            status.innerText = "전송 중..."; status.className = "text-[10px] text-blue-600 font-bold uppercase"; btn.disabled = true;
+
+            compressImage(file, async function(base64Data, mimeType) {
+                const payload = { 
+                    teamName: teamName,
+                    "센터": centerName,
+                    "권역시공팀": regionName,
+                    "시공팀명": teamName
+                };
+                
+                try {
+                    await fetch(GOOGLE_APP_SCRIPT_URL, {
+                        method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ payload: payload, fileData: base64Data, columnName: columnName, mimeType: mimeType })
+                    });
+                    status.innerText = "업로드 완료!"; status.className = "text-[10px] text-green-600 font-bold uppercase";
+                    btn.innerHTML = '<span class="material-symbols-outlined text-sm">check_circle</span><span>완료</span>';
+                    btn.className = "bg-green-600 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all active:scale-95";
+                } catch(e) {
+                    status.innerText = "업로드 실패"; status.className = "text-[10px] text-red-600 font-bold uppercase";
+                }
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>

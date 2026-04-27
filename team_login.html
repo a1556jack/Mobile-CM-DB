@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시공팀 로그인 - TEAM SETUP</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { darkMode: "class", theme: { extend: { colors: { primary: "#7e000f", surface: "#f9f9fc" } } } }
+    </script>
+    <style>
+        body { font-family: 'Public Sans', sans-serif; min-height: 100dvh; }
+        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+    </style>
+</head>
+<body class="bg-surface text-[#1a1c1e] pb-12 flex flex-col justify-center relative">
+
+    <main class="px-6 max-w-lg mx-auto w-full pt-10 relative z-10">
+        
+        <section class="mb-8 text-center">
+            <span class="text-primary font-bold uppercase tracking-widest text-[10px] mb-2 block">Logistics Precision</span>
+            <h2 class="text-3xl font-black tracking-tight leading-tight">시공팀 시스템 접속</h2>
+            <p class="text-gray-500 mt-2 text-sm leading-relaxed">프로필 관리를 위해 소속과 시공팀명, 비밀번호를 입력해주세요.</p>
+        </section>
+
+        <div class="bg-white p-6 rounded-2xl border-2 border-primary/20 shadow-sm space-y-6">
+            
+            <div>
+                <label class="text-[11px] font-bold uppercase tracking-widest text-gray-500 block mb-2">1. 소속 센터 (대분류)</label>
+                <select id="center-select" onchange="updateRegionOptions()" class="w-full bg-gray-50 border-gray-200 rounded-xl px-4 py-4 focus:ring-2 focus:ring-primary outline-none font-bold">
+                    <option value="">센터를 선택하세요</option>
+                    <option value="양지센터">양지센터</option><option value="안성센터">안성센터</option><option value="대전센터">대전센터</option>
+                    <option value="광주센터">광주센터</option><option value="전북센터">전북센터</option><option value="전남센터">전남센터</option>
+                    <option value="대구센터">대구센터</option><option value="부산센터">부산센터</option><option value="창원센터">창원센터</option>
+                    <option value="울산센터">울산센터</option><option value="제주센터">제주센터</option><option value="고객센터">고객센터</option>
+                    <option value="이케아">이케아</option><option value="오늘의집">오늘의집</option><option value="기타">기타</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="text-[11px] font-bold uppercase tracking-widest text-gray-500 block mb-2">2. 권역 시공팀 (중분류)</label>
+                <div id="region-team-container">
+                    <select id="region-select" class="w-full bg-gray-50 border-gray-200 rounded-xl px-4 py-4 focus:ring-2 focus:ring-primary outline-none font-bold" disabled>
+                        <option value="">센터를 먼저 선택하세요</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="pt-2">
+                <label class="text-[11px] font-bold uppercase tracking-widest text-primary block mb-2">3. 시공팀명 입력 (고유 Key)</label>
+                <input type="text" id="team-id-input" class="w-full bg-red-50 border border-red-100 text-red-700 rounded-xl px-4 py-4 outline-none font-black tracking-wider placeholder-red-300" placeholder="예: FQ01전정태">
+            </div>
+
+            <div class="pt-2">
+                <label class="text-[11px] font-bold uppercase tracking-widest text-primary flex items-center gap-1 mb-2">
+                    <span class="material-symbols-outlined text-[14px]">lock</span> 4. 비밀번호
+                </label>
+                <input type="password" id="password-input" class="w-full bg-white border border-gray-300 text-slate-800 rounded-xl px-4 py-4 outline-none font-black tracking-widest focus:ring-2 focus:ring-primary/20 transition-all" placeholder="비밀번호 입력">
+            </div>
+
+            <div class="pt-4 border-t border-gray-100">
+                <button onclick="handleLogin()" id="login-btn" class="w-full py-4 bg-primary text-white rounded-xl font-black text-lg shadow-md hover:bg-[#5a000a] transition-colors flex justify-center items-center gap-2">
+                    인증하고 접속하기
+                </button>
+
+                <div class="mt-6 text-center">
+                    <button onclick="location.href='main.html'" class="inline-flex items-center gap-1 text-gray-400 hover:text-primary font-bold text-[13px] transition-colors group">
+                        <span class="material-symbols-outlined text-[16px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                        모바일CM으로 돌아가기
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <div id="password-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6 text-center">
+        <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl">
+            <div class="bg-primary p-6 text-white">
+                <span class="material-symbols-outlined text-4xl mb-2">lock_reset</span>
+                <h3 class="text-xl font-black">비밀번호 변경 필요</h3>
+                <p class="text-xs text-red-200 mt-1">초기 비밀번호는 사용할 수 없으며 안전한 비밀번호로 변경해야 합니다.</p>
+            </div>
+            <div class="p-6 space-y-4">
+                <input type="password" id="new-password" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 font-bold outline-none focus:ring-2 focus:ring-primary/20" placeholder="새 비밀번호 입력">
+                <input type="password" id="new-password-confirm" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 font-bold outline-none focus:ring-2 focus:ring-primary/20" placeholder="비밀번호 확인">
+                <button onclick="changePassword()" id="change-pw-btn" class="w-full py-4 bg-slate-800 text-white rounded-xl font-bold hover:bg-black transition-colors">
+                    비밀번호 변경 및 접속
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 🚨 여기에 본인의 구글 앱 스크립트 배포 URL을 넣어주세요!
+        const GOOGLE_APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxABPrmCFVHRv6TpZR3QOeASYp5qnsdqKiqztX4SJcVTalj-Q87Vabrt9fe9Ji07PyE/exec";
+
+        // (원본 데이터 100% 유지)
+        const regionData = {
+            "양지센터": ["IA01이동훈", "IB01신민혁", "IC01김태영", "IE01전종규", "IF01김태안", "IH01신승민", "II01정득수", "FA01김현섭", "FB17이정일", "FC19신승현", "FD25손대만", "FE30김정훈", "FF34김용훈", "FI50이현석", "PA00황원영", "MA01이승민", "RT01강민섭", "OT01강민섭"],
+            "안성센터": ["AD01전종규", "AZ01이수완", "AJ01정득수"],
+            "대전센터": ["TA01김점동", "TC01김기진", "TD01김경진", "TE01오진우", "TF01최재강"],
+            "광주센터": ["GA01김영삼", "GB01김재랑"],
+            "전북센터": ["JB01김민상"],
+            "전남센터": ["GN01윤성민"],
+            "대구센터": ["DC01신종화", "DD01임재복", "DE01이찬희"],
+            "부산센터": ["SA01구본준", "SB01김태호", "SD01권재균"],
+            "창원센터": ["CW01권재균"],
+            "울산센터": ["US01임성현"],
+            "제주센터": ["JJ01윤성민"],
+            "고객센터": ["HA01전남성", "HB01안동준", "HC01박승훈", "HD01김태영", "HE01궉상우"]
+        };
+
+        function updateRegionOptions() {
+            const center = document.getElementById('center-select').value;
+            const container = document.getElementById('region-team-container');
+            
+            if (center === "이케아" || center === "오늘의집" || center === "기타") {
+                container.innerHTML = `<input type="text" id="region-select" class="w-full bg-gray-50 border-gray-200 rounded-xl px-4 py-4 focus:ring-2 focus:ring-primary outline-none font-bold" placeholder="권역을 직접 입력하세요">`;
+            } else if (regionData[center]) {
+                let options = `<option value="">권역 시공팀을 선택하세요</option>`;
+                regionData[center].forEach(team => options += `<option value="${team}">${team}</option>`);
+                container.innerHTML = `<select id="region-select" class="w-full bg-gray-50 border-gray-200 rounded-xl px-4 py-4 focus:ring-2 focus:ring-primary outline-none font-bold">${options}</select>`;
+            } else {
+                container.innerHTML = `<select id="region-select" class="w-full bg-gray-50 border-gray-200 rounded-xl px-4 py-4 outline-none font-bold" disabled><option value="">센터를 먼저 선택하세요</option></select>`;
+            }
+        }
+
+        // 💡 로그인 및 서버 통신 로직
+        async function handleLogin() {
+            const center = document.getElementById('center-select').value;
+            const regionSelect = document.getElementById('region-select');
+            const region = regionSelect ? regionSelect.value : "";
+            const teamId = document.getElementById('team-id-input').value.trim();
+            const pw = document.getElementById('password-input').value;
+
+            if (!center || !region || !teamId || !pw) {
+                alert("센터, 권역, 시공팀명, 비밀번호를 모두 입력해 주세요.");
+                return;
+            }
+
+            const btn = document.getElementById('login-btn');
+            btn.disabled = true;
+            btn.innerText = "보안 인증 중...";
+
+            try {
+                // 서버(Code.gs)로 로그인 요청 보내기
+                const res = await fetch(GOOGLE_APP_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        type: "LOGIN_CHECK", 
+                        payload: { loginType: "TEAM", key: teamId, password: pw } 
+                    })
+                });
+                const result = await res.json();
+                
+                if (result.result === "success") {
+                    // 인증 성공 시 브라우저에 정보 저장 후 메인 허브로 이동
+                    localStorage.setItem('team_center', center);
+                    localStorage.setItem('team_region', region);
+                    localStorage.setItem('team_name', teamId);
+                    window.location.href = "index.html";
+                } else if (result.result === "needs_change") {
+                    // 초기 비밀번호인 경우 팝업 띄우기
+                    document.getElementById('password-modal').classList.remove('hidden');
+                } else {
+                    alert("인증 실패: " + result.message);
+                }
+            } catch (e) {
+                alert("서버 통신 오류가 발생했습니다. URL을 확인해주세요.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "인증하고 접속하기";
+            }
+        }
+
+        // 💡 비밀번호 변경 로직
+        async function changePassword() {
+            const center = document.getElementById('center-select').value;
+            const regionSelect = document.getElementById('region-select');
+            const region = regionSelect ? regionSelect.value : "";
+            const teamId = document.getElementById('team-id-input').value.trim();
+            const newPw = document.getElementById('new-password').value;
+            const confirmPw = document.getElementById('new-password-confirm').value;
+
+            if (newPw !== confirmPw) {
+                alert("새 비밀번호가 일치하지 않습니다.");
+                return;
+            }
+            if (newPw === "Baros01!@") {
+                alert("초기 비밀번호는 다시 사용할 수 없습니다.");
+                return;
+            }
+
+            const btn = document.getElementById('change-pw-btn');
+            btn.disabled = true;
+            btn.innerText = "안전하게 기록 중...";
+
+            try {
+                const res = await fetch(GOOGLE_APP_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        type: "CHANGE_PASSWORD",
+                        payload: { loginType: "TEAM", key: teamId, newPassword: newPw }
+                    })
+                });
+                const result = await res.json();
+                
+                if (result.result === "success") {
+                    alert("비밀번호가 성공적으로 변경되었습니다! 시스템으로 접속합니다.");
+                    
+                    // 💡 다시 치라고 쫓아내지 않고, 여기서 바로 접속 정보를 브라우저에 저장!
+                    localStorage.setItem('team_center', center);
+                    localStorage.setItem('team_region', region);
+                    localStorage.setItem('team_name', teamId);
+                    
+                    // 바로 메인 허브(index.html)로 하이패스 통과!
+                    window.location.href = "index.html"; 
+                } else {
+                    alert("비밀번호 변경 실패: " + result.message);
+                }
+            } catch (e) {
+                alert("통신 오류가 발생했습니다.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "비밀번호 변경 및 접속";
+            }
+        }
+    </script>
+</body>
+</html>

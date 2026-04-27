@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시공팀 통합 등록 센터 - TEAM SETUP</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { darkMode: "class", theme: { extend: { colors: { primary: "#7e000f", surface: "#f9f9fc" } } } }
+    </script>
+    <style>
+        body { font-family: 'Public Sans', sans-serif; min-height: 100dvh; }
+    </style>
+</head>
+<body class="bg-surface text-[#1a1c1e] pb-12">
+    <header class="bg-white/80 backdrop-blur-md fixed top-0 w-full z-50 flex items-center justify-between px-6 h-16 border-b border-gray-100">
+        <div class="flex items-center">
+            <button onclick="location.href='team_login.html'" class="material-symbols-outlined text-primary mr-4 p-2 scale-95 cursor-pointer hover:bg-gray-100 rounded-full">arrow_back</button>
+            <h1 class="font-bold text-primary text-sm uppercase tracking-widest">Team Registration Hub</h1>
+        </div>
+        <button onclick="logout()" class="text-xs text-gray-500 font-bold hover:text-primary">로그아웃</button>
+    </header>
+
+    <main class="pt-24 px-6 max-w-2xl mx-auto">
+        
+        <div class="bg-primary p-6 rounded-2xl shadow-lg mb-8 text-white relative overflow-hidden">
+            <div class="absolute right-[-20px] top-[-20px] opacity-10">
+                <span class="material-symbols-outlined text-[120px]">badge</span>
+            </div>
+            <span class="font-bold uppercase tracking-widest text-[10px] text-red-200 mb-1 block">현재 접속 정보</span>
+            <h2 id="display-team-name" class="text-3xl font-black tracking-tight">팀명 로딩중...</h2>
+            <p id="display-region" class="text-red-100 mt-2 font-medium text-sm">센터 및 권역 로딩중...</p>
+        </div>
+
+        <section class="mb-6">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 px-2 block">Registration Steps</h3>
+            <p class="text-[11px] text-gray-400 px-2 mt-1 mb-4">아래 항목을 클릭하여 세부 정보를 등록해 주세요.</p>
+        </section>
+
+        <div id="nav-container" class="space-y-4">
+            <a href="javascript:void(0)" onclick="goPage('mobile.html')" class="nav-card bg-white p-6 rounded-2xl border border-gray-100 flex items-center gap-5 shadow-sm transition-all hover:border-primary/30 active:scale-95">
+                <div class="w-12 h-12 rounded-xl bg-red-50 text-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined">person</span></div>
+                <div class="flex-grow"><h4 class="text-base font-bold">1. 개인 정보 상세 입력</h4></div>
+                <span class="material-symbols-outlined text-gray-300">chevron_right</span>
+            </a>
+            
+            <a href="javascript:void(0)" onclick="goPage('vehicle.html')" class="nav-card bg-white p-6 rounded-2xl border border-gray-100 flex items-center gap-5 shadow-sm transition-all hover:border-blue-500/30 active:scale-95">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0"><span class="material-symbols-outlined">local_shipping</span></div>
+                <div class="flex-grow"><h4 class="text-base font-bold">2. 차량 정보 상세 입력</h4></div>
+                <span class="material-symbols-outlined text-gray-300">chevron_right</span>
+            </a>
+            
+            <a href="javascript:void(0)" onclick="goPage('archive.html')" class="nav-card bg-white p-6 rounded-2xl border border-gray-100 flex items-center gap-5 shadow-sm transition-all hover:border-green-500/30 active:scale-95">
+                <div class="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center shrink-0"><span class="material-symbols-outlined">folder_open</span></div>
+                <div class="flex-grow"><h4 class="text-base font-bold">3. 증빙 서류 아카이브</h4></div>
+                <span class="material-symbols-outlined text-gray-300">chevron_right</span>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        // 1. 페이지 로드 시 로그인 상태 체크 및 화면 표시
+        document.addEventListener("DOMContentLoaded", () => {
+            const teamName = localStorage.getItem('team_name');
+            const center = localStorage.getItem('team_center');
+            const region = localStorage.getItem('team_region');
+
+            if (!teamName) {
+                alert("접속 정보가 없습니다. 다시 로그인해 주세요.");
+                window.location.href = "team_login.html";
+                return;
+            }
+
+            // 화면 상단 카드에 로그인 정보 표시
+            document.getElementById('display-team-name').innerText = teamName;
+            document.getElementById('display-region').innerText = `${center} | ${region}`;
+        });
+
+        // 2. 다른 페이지(모바일, 차량, 서류)로 넘어갈 때 Key 값을 달고 가는 함수
+        function goPage(pageName) {
+            const teamName = localStorage.getItem('team_name');
+            const center = localStorage.getItem('team_center');
+            const region = localStorage.getItem('team_region');
+
+            // 기존 정태 님 코드처럼 URL 파라미터에 달아서 보내줍니다!
+            window.location.href = `${pageName}?teamId=${encodeURIComponent(teamName)}&center=${encodeURIComponent(center)}&region=${encodeURIComponent(region)}`;
+        }
+
+        // 로그아웃 (다시 team_login으로 쫓아냄)
+        function logout() {
+            localStorage.removeItem('team_name');
+            localStorage.removeItem('team_center');
+            localStorage.removeItem('team_region');
+            window.location.href = "team_login.html";
+        }
+    </script>
+</body>
+</html>
